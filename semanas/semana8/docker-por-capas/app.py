@@ -11,4 +11,4 @@ def home():
 if __name__ == "__main__":
     # 0.0.0.0 expone el servidor a la interfaz de red del contenedor
     # necesario para que el host pueda acceder via -p
-    app.run(host = 0.0.0.0, port=5000)
+    app.run(host = "0.0.0.0", port=5000)
