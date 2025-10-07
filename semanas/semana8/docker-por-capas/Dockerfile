@@ -5,7 +5,7 @@ WORKDIR /app
 # Capa 3: primero solo requeriments para cachear instalacion
 COPY requirements.txt .
 # Capa 4: instalar dependencias python
-RUN pip install --no-cache-cir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 # Capa 5: Se copia el codigo por aparte
 COPY app.py .
 # Capa 6 : variable de entorno por defecto
