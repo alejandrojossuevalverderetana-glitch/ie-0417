@@ -1,0 +1,17 @@
+# Imagen base
+FROM gcc:latest
+
+# Crear directorio de trabajo
+WORKDIR /app
+
+# Copiar todos los archivos del laboratorio
+COPY . .
+
+# Compilar todos los programas
+RUN g++ -std=c++20 -pthread threads_basic.cpp -o threads_basic && \
+    g++ -std=c++20 -pthread contador_compartido.cpp -o contador_compartido && \
+    g++ -std=c++20 -pthread productor_consumidor.cpp -o productor_consumidor && \
+    g++ -std=c++20 -pthread semaforos_barrera.cpp -o semaforos_barrera
+
+# Comando por defecto
+CMD ["bash"]
