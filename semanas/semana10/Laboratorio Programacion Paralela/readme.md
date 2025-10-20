@@ -1,6 +1,6 @@
-# 🧵 Laboratorio: Programación Paralela y Concurrente en C++
+# Laboratorio: Programación Paralela y Concurrente en C++
 
-## 🧩 Fase 1: Fundamentos prácticos de concurrencia
+## Fase 1: Fundamentos prácticos de concurrencia
 
 ### 🗂 Archivo: `threads_basic.cpp`
 
@@ -125,3 +125,21 @@ En este laboratorio se vio principalmente concurrencia, aunque si el procesador 
 ### 3. Mecanismos para evitar condiciones de carrera
 
 Se usaron **mutex**, **variables de condición** y **semaforos** para controlar el acceso a los recursos compartidos.
+
+### 4. Impacto de los mecanismos de sincronización en el rendimiento
+
+Protegen los datos compartidos y evitan errores, pero agregan **latencia** porque los hilos esperan a que otros liberen recursos.  
+Sin sincronización sería más rápido, pero los resultados podrían ser incorrectos.
+
+### 5. Costo de crear y administrar hilos
+
+Cada hilo consume **memoria y recursos del CPU**. Muchos hilos pequeños provocan **cambios de contexto** frecuentes, lo que puede reducir el rendimiento en lugar de mejorarlo.
+Además de que gestionar los hilos conlleva una gran responsabilidad al tener que asegurarse de que no haya deadlocks o cualquier problema general que estos puedan agregar al codigo
+
+### 6. Optimización: balance entre granularidad y rendimiento
+
+- Usar una **cantidad de hilos acorde a los núcleos** del CPU.  
+- Dividir tareas lo suficientemente grandes para amortizar el costo de los hilos, pero no tan grandes como para perder paralelismo.  
+- Bloquear solo lo necesario y usar `notify_one()` cuando sea posible.  
+- Reutilizar hilos con **thread pools** para evitar creación/destrucción constante.  
+- Minimizar contención por recursos compartidos.
