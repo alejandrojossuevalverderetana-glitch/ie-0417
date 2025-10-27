@@ -21,6 +21,8 @@ gdb ./suma_vector
 
 **Evidencia:**  
 
+![suma_vector](images/suma_vector.png)
+
 ### 易 Preguntas (Fase 1)
 
 1. ¿Qué tipo de error genera el fallo de ejecución?  
@@ -53,11 +55,16 @@ valgrind --leak-check=yes --track-origins=yes --show-leak-kinds=all ./buffers
 ```
 
 **Evidencia:**  
-_Agregar capturas de los errores detectados por ASan y Valgrind, tanto antes como después de corregir el código._
+
+![buffers1](images/buffers1.png)
+![buffers2](images/buffers2.png)
+![buffers3](images/buffers3.png)
 
 ### 易 Preguntas (Fase 2)
 
 1. ¿Qué tipo de error detectó primero AddressSanitizer?  
+
+    El primer error detectado el es overflow
 
 2. ¿Cuál fue la causa de la fuga de memoria?  
 
@@ -87,9 +94,14 @@ valgrind --tool=helgrind ./race
 
 **Evidencia:**  
 
+![race1](images/race1.png)
+![race2](images/race2.png)
+
 ### 易 Preguntas (Fase 3)
 
 1. ¿Qué tipo de acceso detecta ThreadSanitizer como data race?  
+
+    ThreadSanitizer detectó una data race porque ambos hilos escriben simultáneamente en la variable global **contador** sin sincronización.
 
 2. ¿Por qué Helgrind tiene un mayor costo de ejecución?  
 
@@ -105,6 +117,8 @@ valgrind --tool=helgrind ./race
 ### 離 Actividad 4: Makefile y perfiles de análisis
 
 **Evidencia:**  
+
+![make](images/make.png)
 
 ## 隣 Fase 5 – Análisis conceptual y reflexivo
 
