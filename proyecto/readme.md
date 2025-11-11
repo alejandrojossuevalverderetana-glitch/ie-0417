@@ -1,4 +1,4 @@
-# 🏗️ 1. Arquitectura General del Sistema
+# 1. Arquitectura General del Sistema
 
 El **diagrama de arquitectura** muestra cómo se organiza y comunica todo el ecosistema de EIEInfo, desde el **frontend** hasta la **infraestructura de despliegue**.  
 Proporciona una vista global del sistema y sus interacciones principales.
@@ -52,7 +52,7 @@ Muestra dependencias funcionales y flujos de interacción a nivel de sistema, si
 - **Cluster Académico:** agrupa entidades como Cursos, Estudiantes, Profesores, Atributos y Laboratorios.  
 - **Cluster de Eventos y Comunicaciones:** abarca Eventos, Conferencias, Anuncios y Alumni.
 
-### 🔁 Conexiones principales
+### Conexiones principales
 
 - El **administrativo** gestiona y conecta con los módulos académicos y de eventos.  
 - **Cursos, Estudiantes y Profesores** comparten dependencias con Atributos y Laboratorios.  
@@ -69,7 +69,7 @@ Muestra dependencias funcionales y flujos de interacción a nivel de sistema, si
 El **modelo de datos** describe las principales entidades y sus relaciones dentro del sistema EIEInfo.  
 Representa una **visión lógica y conceptual** de la base de datos, organizada por dominios o módulos.
 
-### 🔹 Estructura por dominios
+### Estructura por dominios
 
 | Dominio | Entidades principales | Ejemplo de relaciones |
 |----------|----------------------|------------------------|
@@ -90,7 +90,7 @@ Representa una **visión lógica y conceptual** de la base de datos, organizada 
 
 ---
 
-## 🧾 Notas finales
+## Notas finales
 
 - Los tres diagramas fueron generados con la librería [**Diagrams (by Mingrammer)**](https://diagrams.mingrammer.com/), utilizando Python para definir relaciones y colores personalizados.  
 - Los **colores representan dominios funcionales**, y las **flechas indican flujos de comunicación o dependencia**.  
