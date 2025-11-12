@@ -321,56 +321,73 @@ Representa una **visión lógica y conceptual** de la base de datos, organizada 
 # Identificación de problemas y oportunidades
 
 ## Repetición de código
-En primer lugar, el sistema presenta una cantidad significativa de código duplicado en diversos módulos que ejecutan las mismas funciones con simples variaciones. Los módulos profesores, estudiantes y administrativos poseen vistas separadas para las mismas operaciones con leves diferencias como por ejemplo: "views/practicas_profesionales" para ambos profesores y administrativos. 
+En primer lugar, el sistema presenta una cantidad significativa de **código duplicado** en diversos módulos que ejecutan las mismas funciones con simples variaciones. Los módulos **profesores**, **estudiantes** y **administrativos** poseen vistas separadas para las mismas operaciones con leves diferencias, como por ejemplo en `views/practicas_profesionales` para ambos profesores y administrativos.  
 
-Esto no solamente ocurre en estos módulos, de hecho es un problema recurrente en gran cantidad de módulos del sistema de EIEInfo, sin embargo, es sumamente común en estos tres módulos.
+Esto no solamente ocurre en estos módulos; de hecho, es un problema recurrente en gran cantidad de módulos del sistema **EIEInfo**, sin embargo, es especialmente común en estos tres.  
 
-La solución para lo anterior es que, en los casos que esto ocurra (ya que no ocurre únicamente en el ejemplo brindado), se utilice un patrón creacional de "Factory Method", en donde se tiene una clase base que se encarga de brindar la funcionalidad necesaria a las demás subclases y se instancia la subclase necesaria en vez de re definir nuevamente el mismo método para cada módulo.
+La solución para lo anterior es que, en los casos en que esto ocurra (ya que no ocurre únicamente en el ejemplo brindado), se utilice un **patrón creacional `Factory Method`**, en donde se tenga una clase base que se encargue de brindar la funcionalidad necesaria a las demás subclases y se instancie la subclase necesaria en vez de redefinir nuevamente el mismo método para cada módulo.  
 
-Lo anterior se puede considerar como una mejora técnica
+*Esto se puede considerar una mejora técnica.*
 
+---
 
 ## Falta de validación o seguridad
+Actualmente, el sistema presenta un **sistema de autenticación manual** en donde la autenticidad del usuario depende del *cookie* de ID proporcionado por la página. Esto puede representar un **riesgo de seguridad**, ya que si un tercero obtiene este *cookie* o logra que el usuario utilice un ID conocido de sesión, puede **impersonar al usuario**. Esto ocurre al mismo tiempo en que se utiliza código repetido para el inicio de sesión de estudiante, profesor y administrativo.  
 
-Actualmente, el sistema presenta un sistema de autenticación manual en donde la autenticidad del usuario depende del cookie de id proporcionado por la página. Esto puede expresar un riesgo de seguridad ya que si un tercero obtiene este cookie o logra que el usuario utilice un ID conocido de sesión, puede impersonar al usuario. Esto ocurre al mismo tiempo en el que se utiliza código repetido para inicio de sesión de estudiante, profesor y administrativo.
+La solución propuesta a lo anterior es tener un **sistema de usuario base** en donde se utilice la autenticación brindada por Django (`django.contrib.auth`) y autenticar al usuario dependiendo de su tipo específico.  
 
-La solución propuesta a lo anterior es tener un sistema de usuario de base en donde se utilice la autenticación brindada por Django "django.contrib.auth" y autenticar al usuario dependiendo de su tipo específico.
+*Esto se puede considerar una mejora técnica.*  
 
-Lo anterior se puede considerar como una mejora técnica.
+Por otro lado, con respecto a la seguridad, en diversos segmentos como `estudiantes/models.py`, se muestra que se permite subir archivos de cualquier tipo sin límite de extensión ni inspección de contenido. Esto presenta un **riesgo**, ya que se podría subir un archivo malicioso que no sería detectado.  
 
-Por otro lado, con respecto a seguirdad, en diversos segmentos como estudiantes/models.py, se muestra que se permite subir archivos de cualquier tipo sin límite de extensión ni inspección de contenido. Esto presenta un riesgo ya que se podría subir un archivo malicioso y no sería detectado. 
+Como solución, se puede agregar **validación del tipo de archivo** que se agrega, lo cual encaja como una mejora técnica relacionada con el código.
 
-Como solución, se puede agregar validación del tipo de archivo que se agrega, lo cuál encaja como una ténica referente al código.
+---
 
-## Falta de Modularidad
+## Falta de modularidad
+En diversos segmentos del sistema se encuentra una gran cantidad de **lógica dentro de un mismo módulo**, lo cual **viola el principio de responsabilidad única**. Como ejemplo, el método `ActualizarGruposUsuario()` presente en `profesores/models.py` mezcla seis tareas distintas en un solo método dentro del módulo.  
 
-En diversos segmentos del sistema se encuentra una gran cantidad de lógica dentro de un mismo módulo, la que viola el principio de responsabilidad única. Cómo ejemplo, el método "ActualizarGruposUsuario() presente en "profesores/models.py" mezcla seis tareas distintas en un solo método dentro del módulo.
+Esto requiere una **mejora técnica**, y se propone generar una **capa de servicios** que se ubique entre los modelos y las vistas. Dicha capa se encargaría de proporcionar servicios específicos para diversas tareas, los cuales podrían ser llamados por métodos, evitando así implementar la lógica directamente dentro de cada uno.  
 
-Esto requiere una mejora técnica y se propone generar una capa de servicios que se ubica entre los modelos y las vistas, los cuales se encargan de proporcionar servicios específicos para diversas tareas, los cuales pueden ser llamados por métodos y así no implementar la lógica del servicio dentro del método en sí. 
+Es importante destacar que el caso de `ActualizarGruposUsuario()` es solo un ejemplo de muchos otros segmentos en el sistema en donde ocurre lo mismo. Por ejemplo, en `estudiantes/views/asistencias.py`, el método `aceptar_rechazar_asistencia()` es extenso y cumple demasiadas funciones dentro de un mismo bloque, como aceptar asistencias, enviar correo al estudiante, enviar correo al profesor, etc.  
 
-Es importante destacar que el caso de ActualizarGrupoUsuario() es un ejemplo de muchos otros segmentos en el sistema en donde ocurre esto. Por ejemplo, en "estudiantes/views/asistencias.py", el método aceptar_rechazar_asistencia() es masivo y cumple demasiadas funciones dentro de un mismo método como aceptar asistencias, enviar correo a estudiante, enviar correo a profesor... todo dentro de la misma lógica.
+**Solución:** generar una **capa de servicios** que se encargue de proporcionar estas funcionalidades (que pueden ser reutilizadas por otros módulos de ser necesario, por ejemplo, si un profesor desea enviar un correo a un estudiante). De esta forma, se obtendría un **código más modular**, evitando métodos que definan varias funciones dentro de sí. Esto también ayudaría a **reducir la repetición de código** dentro del sistema.  
 
-Solución: De nuevo, como solución aplica el realizar una capa de servicios que se encargue de porporcionar estos servicios (que pueden ser reutilizados por otros módulos de ser necesario, ya que tal vez un profesor desee enviar un correo a un estudiante y se puede utilizar el servicio como base), para de esta forma tener un código más modular y no métodos que definan varias funciones dentro de sí. Cabe destacar que esto ayudaría también a evitar la repetición de código dentro del sistema. Como se mecnionó, esto es una mejora técnica de estilo arquitectura, ya que se busca realizar separación por capas de los módulos.
+*Esto se considera una mejora técnica de arquitectura, ya que se busca lograr una separación por capas dentro de los módulos.*
+
+---
 
 ## Problemas de UI/UX
+En la página de la escuela, al momento de hacer clic sobre el logo de **Universidad de Costa Rica**, el sistema redirige al sitio oficial de la Universidad y **sale completamente de EIEInfo**.  
 
-En la página de la escuela, al momento de hacer click sobre el logo de "Universidad de Costa Rica", el sistema se redirijge a la página oficial de Universidad de Costa Rica y se sale completamente de EIEInfo.
+**Solución:** en lugar de salir completamente de la página, se debe abrir una **nueva pestaña** que envíe al usuario al sitio oficial, de forma que este permanezca dentro de EIEInfo después de hacer clic.  
+*Esto se considera una mejora funcional.*  
 
-Solución: En vez de salirse completamente de la página, se debe de abrir una pestaña nueva que envíe al usuario a la página de la Universidad de Costa Rica para que el usuario permanezca en la página de EIEInfo luego de clickear. Esto es una mejora funcional.
+Además, otro error presente en cuanto a UI/UX se observa en que muchos de los **mensajes están codificados directamente (hard-coded)** en español. Aunque la mayoría de usuarios comprende el idioma, no es una buena práctica de programación.  
 
-Además, otro error presente con respecto a UI/UX en el código se puede observar en que muchos de los mensajes se encuentran "hard-coded" en español. Puede que esto no signifique un gran problema ya que la mayoría de usuarios ya que se espera que los usuarios sepan español, sin embargo, no necesariamente es una buena práctica de programación.
+**Solución:** utilizar el sistema **i18n de Django**, el cual permite traducir los mensajes al idioma configurado por el usuario o el proyecto.  
+*Esto representa una mejora técnica de código.*  
 
-Solución: Utilizar el sistema i18n de Django, el cual permite traducir el mensaje al idioma configurado por el usuario o proyecto. Esto representa una mejora técnica de código.
+Por otro lado, otro problema de UI/UX se presenta en **mensajes poco informativos**, como en `estudiantes/views/asistencias.py`, donde se indica:  
+> “Formulario inválido. Por favor corrija los errores e intente de nuevo.”
 
-Por otro lado, otro problema encontrado de UI/UX se muestra en mensajes poco informativos como por ejemplo, en "estudiantes/views/asistencias.py", se indica "Formulario inválido. Por favor corrija los errores e intente de nuevo". Lo anterior ocurre en diversos segmentos del sistema. 
+Esto ocurre en diversos segmentos del sistema.  
 
-Solución: Implementar mensajes de error específicos que informen al usuario exactamente qué campos tienen errores y cuál es la naturaleza del problema. En lugar de mostrar un mensaje genérico, se debe iterar sobre los errores del formulario y presentar cada uno de manera clara. Esto representa una mejora técnica de código.
+**Solución:** implementar **mensajes de error específicos** que informen al usuario exactamente qué campos tienen errores y cuál es la naturaleza del problema. En lugar de mostrar un mensaje genérico, se debe iterar sobre los errores del formulario y presentar cada uno de manera clara.  
+*Esto representa una mejora técnica de código.*
+
+---
 
 ## Carencia de documentación
+Gran parte del sistema presenta una **documentación débil o insuficiente**. En la mayoría de secciones únicamente se tiene una idea general de lo que hace el módulo; por ejemplo, en `profesores/models.py` solo se incluye una breve descripción:  
+> “Modelo de un profesor, hereda de funcionario.”
 
-Gran parte del sistema tiene una documentación bastante débil. En la mayoría de secciones simplemente se tiene una idea de lo que hace el módulo como por ejemplo, en "profesores/models.py" solo inicia con un texto que indica "Modelo de un profesor, hereda de funcionario". Los comentarios en la mayor parte del sistema no aportan información relevante sobre el funcionamiento de los módulos, por lo que en la mayoría de escenarios no aportan utilidad alguna al programador para escalar el sistema o agregar funcionalidades.
+Los comentarios en la mayor parte del sistema **no aportan información relevante** sobre el funcionamiento interno de los módulos, por lo que en la mayoría de los casos no resultan útiles para que un programador pueda escalar el sistema o agregar nuevas funcionalidades.  
 
-Solución: Se debe de implementar una estructura definida de comentarios más descriptivos como por ejemplo PEP 257. Esto significaría una mejora técnica de código.
+**Solución:** implementar una **estructura definida de comentarios más descriptivos**, siguiendo estándares como **PEP 257** (docstrings formales y consistentes).  
+*Esto constituye una mejora técnica del código.*
+
+---
 
 
 
