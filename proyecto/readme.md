@@ -1,10 +1,19 @@
 # Resumen ejecutivo del sistema
 
-La virtualización de la información y de los procesos asociados resulta esencial para optimizar la gestión y agilizar las operaciones institucionales. Es igualmente importante que dicha virtualización se base en prácticas escalables y sostenibles, que garanticen la integridad de los datos, la mantenibilidad y la eficiencia del sistema a largo plazo.
+La digitalización de los procesos académicos y administrativos es un componente clave para la eficiencia y transparencia institucional. En respuesta a esta necesidad, la **Escuela de Ingeniería Eléctrica de la Universidad de Costa Rica** desarrolló el sistema **EIEInfo**, una plataforma web destinada a **centralizar la gestión académica, administrativa y comunicacional** de la unidad. Su finalidad es unificar en un solo entorno la información de estudiantes, profesores, personal administrativo y público general, permitiendo un acceso más rápido, ordenado y confiable a los datos institucionales.  
 
-El sistema EIEInfo surge como respuesta a esta necesidad. Se trata de una plataforma web desarrollada para centralizar la gestión académica y administrativa de la Escuela de Ingeniería Eléctrica de la Universidad de Costa Rica. Su propósito es ofrecer información relevante al público general sobre las actividades y servicios de la Escuela, a la vez que brinda a estudiantes, docentes y personal administrativo un entorno integrado que facilita la realización de sus funciones. El sistema incorpora módulos de noticias, proyectos, cursos, personal, trámites y servicios, los cuales se interconectan dentro de una arquitectura escalable basada en Django y bases de datos relacionales, garantizando así un funcionamiento estable y escalable.
+EIEInfo integra diversos módulos —como cursos, noticias, laboratorios, proyectos, personal, trámites y servicios— que en conjunto buscan mejorar la trazabilidad de la información y reducir los tiempos de gestión. El sistema se encuentra implementado sobre **Django**, bajo una estructura que combina vistas, modelos y controladores en un entorno web adaptable.  
 
-Con su implementación, la Escuela busca fortalecer su capacidad de gestión, reducir los tiempos de tramitación de datos, mejorar la trazabilidad de la información y promover una administración más transparente y eficiente. En conjunto, EIEInfo representa un avance significativo hacia la transformación digital y la modernización de la gestión universitaria dentro de la Universidad de Costa Rica.
+Durante el proceso de análisis técnico se identificó que, si bien el sistema cumple con sus objetivos funcionales, **presenta oportunidades de mejora significativas** en su diseño interno. Entre los principales hallazgos se destacan:  
+- **Falta de modularidad**, con métodos extensos que mezclan responsabilidades y lógica de negocio en las vistas o modelos.  
+- **Código duplicado** en varios módulos con funcionalidades similares.  
+- **Mensajes de interfaz poco informativos y codificados directamente en español**, lo que limita la experiencia de usuario y la internacionalización.  
+- **Débil validación y control de seguridad**, incluyendo manejo manual de autenticación y carga de archivos sin filtros.  
+- **Documentación técnica insuficiente**, que dificulta la comprensión y mantenimiento del sistema.  
+
+A partir de este diagnóstico, se concluye que EIEInfo **busca evolucionar hacia un sistema más escalable, modular y mantenible**, con mejores prácticas de separación por capas, reutilización de código y control de seguridad. Para ello, se recomienda implementar una arquitectura más clara basada en principios de responsabilidad única, fortalecer la documentación, y adoptar patrones de diseño que permitan su expansión controlada.  
+
+En síntesis, EIEInfo representa una base sólida para la gestión institucional de la Escuela, pero requiere **refactorización técnica y reestructuración arquitectónica** para garantizar su sostenibilidad y crecimiento futuro. Su mejora constituye una oportunidad para consolidar una plataforma moderna, eficiente y alineada con los objetivos de transformación digital de la Universidad de Costa Rica.
 
 # Descripción funcional del sistema
 
