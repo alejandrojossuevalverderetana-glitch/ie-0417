@@ -362,7 +362,7 @@ Además, otro error presente con respecto a UI/UX en el código se puede observa
 
 Solución: Utilizar el sistema i18n de Django, el cual permite traducir el mensaje al idioma configurado por el usuario o proyecto. Esto representa una mejora técnica de código.
 
-Por otro lado, otro problema encontrado de UI/UX se muestra en mensajes poco informativos como por ejemplo, en "estudiantes/views/asistencias.py", se indica ""Formulario inválido. Por favor corrija los errores e intente de nuevo". Lo anterior ocurre en diversos segmentos del sistema. 
+Por otro lado, otro problema encontrado de UI/UX se muestra en mensajes poco informativos como por ejemplo, en "estudiantes/views/asistencias.py", se indica "Formulario inválido. Por favor corrija los errores e intente de nuevo". Lo anterior ocurre en diversos segmentos del sistema. 
 
 Solución: Implementar mensajes de error específicos que informen al usuario exactamente qué campos tienen errores y cuál es la naturaleza del problema. En lugar de mostrar un mensaje genérico, se debe iterar sobre los errores del formulario y presentar cada uno de manera clara. Esto representa una mejora técnica de código.
 
