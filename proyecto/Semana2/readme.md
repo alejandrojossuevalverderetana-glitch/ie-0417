@@ -200,7 +200,6 @@ El flujo describe cómo el sistema valida las credenciales de un usuario. La Vis
 #### b. Diagrama de Secuencia: Registro de Usuario
 
 ```mermaid
-Copiar código
 sequenceDiagram
     participant Usuario
     participant Vista as View (RegistroForm)
@@ -224,7 +223,6 @@ Este diagrama evidencia la creación centralizada de usuarios, con validaciones 
 ### c. Diagrama de Secuencia: Cambio de Contraseña
 
 ```mermaid
-Copiar código
 sequenceDiagram
     participant Usuario
     participant Vista as View (CambiarPasswordForm)
