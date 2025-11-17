@@ -18,6 +18,7 @@ En síntesis, EIEInfo representa una base sólida para la gestión institucional
 # Descripción funcional del sistema
 
 ## Flujo de navegación principal
+
 El flujo de navegación principal del sistema se puede describir por medio del siguiente diagrama:
 
 El sistema EIEInfo inicia con una página principal o landing page, que funciona como punto de acceso común para todos los usuarios, salvo que se ingresen rutas específicas de forma directa. En esta página se despliega una barra de navegación dinámica con menús desplegables que permiten acceder a las distintas secciones del sitio. Cada opción redirige al usuario a una ruta diferente, cuya funcionalidad depende del contenido definido por el programador. En modo de desarrollo, si la base de datos se encuentra vacía, pueden presentarse errores al acceder a rutas como “/primer-ingreso”, lo que evidencia limitaciones en el manejo de excepciones.
@@ -40,26 +41,26 @@ Los módulos existentes dentro del proyecto son:
 - eieindo
 - administrativos
 - alumni
-- anuncios 
-- asistencias 
+- anuncios
+- asistencias
 - atributos
-- conferencias 
+- conferencias
 - cursos
-- estudiantes 
+- estudiantes
 - eventos
-- inventario 
-- laboratorios 
-- practica_profesional 
+- inventario
+- laboratorios
+- practica_profesional
 - profesores
 - proyecto_electrico
-- profesores 
+- profesores
 - proyectos
 - trabajos_finales
 - webpage
 
 ## Tipos de usuarios
 
-Los tipos de usuario principales son: 
+Los tipos de usuario principales son:
 - Estudiantes
 - Profesores
 - Administrativos
@@ -351,9 +352,8 @@ Por otro lado, con respecto a la seguridad, en diversos segmentos como `estudian
 
 Como solución, se puede agregar **validación del tipo de archivo** que se agrega, lo cual encaja como una mejora técnica relacionada con el código.
 
----
-
 ## Falta de modularidad
+
 En diversos segmentos del sistema se encuentra una gran cantidad de **lógica dentro de un mismo módulo**, lo cual **viola el principio de responsabilidad única**. Como ejemplo, el método `ActualizarGruposUsuario()` presente en `profesores/models.py` mezcla seis tareas distintas en un solo método dentro del módulo.  
 
 Esto requiere una **mejora técnica**, y se propone generar una **capa de servicios** que se ubique entre los modelos y las vistas. Dicha capa se encargaría de proporcionar servicios específicos para diversas tareas, los cuales podrían ser llamados por métodos, evitando así implementar la lógica directamente dentro de cada uno.  
@@ -364,9 +364,8 @@ Es importante destacar que el caso de `ActualizarGruposUsuario()` es solo un eje
 
 *Esto se considera una mejora técnica de arquitectura, ya que se busca lograr una separación por capas dentro de los módulos.*
 
----
-
 ## Problemas de UI/UX
+
 En la página de la escuela, al momento de hacer clic sobre el logo de **Universidad de Costa Rica**, el sistema redirige al sitio oficial de la Universidad y **sale completamente de EIEInfo**.  
 
 **Solución:** en lugar de salir completamente de la página, se debe abrir una **nueva pestaña** que envíe al usuario al sitio oficial, de forma que este permanezca dentro de EIEInfo después de hacer clic.  
@@ -388,6 +387,7 @@ Esto ocurre en diversos segmentos del sistema.
 ---
 
 ## Carencia de documentación
+
 Gran parte del sistema presenta una **documentación débil o insuficiente**. En la mayoría de secciones únicamente se tiene una idea general de lo que hace el módulo; por ejemplo, en `profesores/models.py` solo se incluye una breve descripción:  
 > “Modelo de un profesor, hereda de funcionario.”
 
@@ -395,12 +395,3 @@ Los comentarios en la mayor parte del sistema **no aportan información relevant
 
 **Solución:** implementar una **estructura definida de comentarios más descriptivos**, siguiendo estándares como **PEP 257** (docstrings formales y consistentes).  
 *Esto constituye una mejora técnica del código.*
-
----
-
-
-
-
-
-
-
