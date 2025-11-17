@@ -32,7 +32,7 @@ Profesores: pueden visualizar y modificar su perfil, consultar nombramientos y p
 Administrativos: pueden visualizar su perfil, consultar y filtrar estudiantes, crear y filtrar anuncios y eventos (con rutas diferentes a las de los profesores), observar la reserva de espacios del edificio (aunque en modo de desarrollo se presentan colisiones de visualización en el menú lateral), consultar nombramientos interinos o en continuidad por departamento y ciclo, observar comisiones, proyectos, resúmenes del ciclo y documentos relevantes. También pueden emitir sugerencias mediante formulario.
 
 El flujo principal se puede observar en la siguiente figura:
-![<img src="./flujo_principal.png" alt="Flujo principal" width="100%">](/proyecto/images/flujo_principal.png)
+![Flujo de navegacion](./images/flujo_principal.png)
 
 ## Módulos existentes
 
@@ -61,6 +61,7 @@ Los módulos existentes dentro del proyecto son:
 ## Tipos de usuarios
 
 Los tipos de usuario principales son:
+
 - Estudiantes
 - Profesores
 - Administrativos
