@@ -87,7 +87,113 @@ El módulo propuesto busca **unificar la autenticación y la gestión de usuario
 
 ## Diagramas UML
 
-### 1. Diagrama de Clases
+### 4. Diagramas de Secuencia – Módulo de Gestión de Usuarios y Sesiones
+
+Este documento describe las interacciones entre las capas del sistema para las operaciones principales sobre los usuarios: **login**, **registro** y **cambio de contraseña**. Cada diagrama muestra cómo se comunican **usuario**, **vista**, **servicios**, **modelo** y **Django**.
+
+---
+
+#### a. Diagrama de Secuencia: Login de Usuario
+
+```mermaid
+sequenceDiagram
+    participant Usuario
+    participant Vista as View (LoginForm)
+    participant Servicio as ServicioUsuario
+    participant Modelo as ModeloUsuario
+    participant Django as Django User
+
+    Usuario->>Vista: Envía email y contraseña
+    Vista->>Servicio: Validar credenciales
+    Servicio->>Modelo: Buscar usuario por email
+    Modelo-->>Servicio: Retorna usuario
+    Servicio->>Django: Verificar contraseña
+    Django-->>Servicio: Resultado validación
+    Servicio-->>Vista: Login exitoso / error
+    Vista-->>Usuario: Muestra dashboard / mensaje de error
+```
+
+Explicación:
+El flujo describe cómo el sistema valida las credenciales de un usuario. La Vista recibe los datos, la capa de Servicio ejecuta la lógica de validación, el Modelo obtiene al usuario de la base de datos, y Django verifica la contraseña y gestiona la sesión.
+
+#### b. Diagrama de Secuencia: Registro de Usuario
+
+```mermaid
+sequenceDiagram
+    participant Usuario
+    participant Vista as View (RegistroForm)
+    participant Servicio as ServicioUsuario
+    participant Modelo as ModeloUsuario
+    participant Django as Django User
+
+    Usuario->>Vista: Llena formulario de registro
+    Vista->>Servicio: Validar datos y crear usuario
+    Servicio->>Modelo: Guardar usuario en DB
+    Modelo-->>Servicio: Usuario creado
+    Servicio->>Django: Crear objeto User de Django
+    Django-->>Servicio: Usuario autenticable creado
+    Servicio-->>Vista: Registro exitoso / errores
+    Vista-->>Usuario: Muestra confirmación / mensajes de error
+```
+
+Explicación:
+Este diagrama evidencia la creación centralizada de usuarios, con validaciones de datos y generación de un usuario autenticable en Django. Permite extender fácilmente el sistema para distintos tipos de usuarios sin duplicación de código.
+
+### 5. Diagrama de actividad
+
+Este diagrama presenta el flujo completo del módulo de usuarios, incluyendo autenticación, registro y recuperación de contraseña.
+
+```mermaid
+flowchart TD
+    %% ====== ESTADOS INICIALES ======
+    A([Inicio]) --> B{¿Usuario autenticado?}
+
+    %% ====== NO AUTENTICADO ======
+    B -- No --> C[Mostrar pantalla inicial:<br>• Iniciar sesión<br>• Registrarse<br>• Recuperar contraseña]
+
+    %% ====== LOGIN ======
+    C --> D{¿Selecciona Iniciar sesión?}
+    D -- Sí --> E[Ingresar email y contraseña]
+    E --> F[Validar credenciales]
+    F --> G{¿Credenciales válidas?}
+    G -- No --> E2[Mostrar error e intentar de nuevo] --> E
+    G -- Sí --> H[Crear sesión de usuario]
+
+    %% ====== REGISTRO ======
+    D -- No --> I{¿Selecciona Registrarse?}
+    I -- Sí --> J[Completar formulario de registro]
+    J --> K[Validar datos]
+    K --> L{¿Datos válidos?}
+    L -- No --> J2[Mostrar errores] --> J
+    L -- Sí --> M[Crear usuario]
+    M --> C
+
+    %% ====== RECUPERAR CONTRASEÑA ======
+    I -- No --> Z{¿Selecciona Recuperar contraseña?}
+    Z -- Sí --> Z1[Ingresar email y carnet]
+    Z1 --> Z2[Validar formato del correo]
+    Z2 --> Z3[Validar formato del carnet]
+    Z3 --> Z4[Verificar coincidencia email + carnet]
+    Z4 --> Z5{¿Datos coinciden?}
+
+    Z5 -- No --> Z6[Mostrar error y reintentar] --> Z1
+    Z5 -- Sí --> Z7[Crear solicitud de recuperación]
+    Z7 --> Z8[Enviar correo con enlace de recuperación]
+    Z8 --> C
+
+    %% ====== USUARIO AUTENTICADO ======
+    B -- Sí --> H2[Mostrar Dashboard]
+
+    %% ====== LOGOUT ======
+    H2 --> W{¿Cerrar sesión?}
+    W -- Sí --> W1[Eliminar sesión]
+    W1 --> C
+
+    %% ====== FIN ======
+    H2 --> Y([Fin])
+```
+
+### 6. Diagrama de base de datos
 
 Representa la estructura jerárquica de los usuarios del sistema, mostrando las **entidades**, sus **atributos** y las **relaciones de herencia**.
 
@@ -167,86 +273,3 @@ classDiagram
 
 Explicación:
 Este diagrama permite visualizar cómo los tipos de usuarios heredan de la clase base Usuario, y cómo Funcionario se especializa en Profesor y Administrativo. Todos los campos críticos para autenticación, contacto y perfil se centralizan en Usuario, evitando duplicación.
-
-### 2. Diagramas de Secuencia – Módulo de Gestión de Usuarios y Sesiones
-
-Este documento describe las interacciones entre las capas del sistema para las operaciones principales sobre los usuarios: **login**, **registro** y **cambio de contraseña**. Cada diagrama muestra cómo se comunican **usuario**, **vista**, **servicios**, **modelo** y **Django**.
-
----
-
-#### a. Diagrama de Secuencia: Login de Usuario
-
-```mermaid
-sequenceDiagram
-    participant Usuario
-    participant Vista as View (LoginForm)
-    participant Servicio as ServicioUsuario
-    participant Modelo as ModeloUsuario
-    participant Django as Django User
-
-    Usuario->>Vista: Envía email y contraseña
-    Vista->>Servicio: Validar credenciales
-    Servicio->>Modelo: Buscar usuario por email
-    Modelo-->>Servicio: Retorna usuario
-    Servicio->>Django: Verificar contraseña
-    Django-->>Servicio: Resultado validación
-    Servicio-->>Vista: Login exitoso / error
-    Vista-->>Usuario: Muestra dashboard / mensaje de error
-```
-
-Explicación:
-El flujo describe cómo el sistema valida las credenciales de un usuario. La Vista recibe los datos, la capa de Servicio ejecuta la lógica de validación, el Modelo obtiene al usuario de la base de datos, y Django verifica la contraseña y gestiona la sesión.
-
-#### b. Diagrama de Secuencia: Registro de Usuario
-
-```mermaid
-sequenceDiagram
-    participant Usuario
-    participant Vista as View (RegistroForm)
-    participant Servicio as ServicioUsuario
-    participant Modelo as ModeloUsuario
-    participant Django as Django User
-
-    Usuario->>Vista: Llena formulario de registro
-    Vista->>Servicio: Validar datos y crear usuario
-    Servicio->>Modelo: Guardar usuario en DB
-    Modelo-->>Servicio: Usuario creado
-    Servicio->>Django: Crear objeto User de Django
-    Django-->>Servicio: Usuario autenticable creado
-    Servicio-->>Vista: Registro exitoso / errores
-    Vista-->>Usuario: Muestra confirmación / mensajes de error
-```
-
-Explicación:
-Este diagrama evidencia la creación centralizada de usuarios, con validaciones de datos y generación de un usuario autenticable en Django. Permite extender fácilmente el sistema para distintos tipos de usuarios sin duplicación de código.
-
-### c. Diagrama de Secuencia: Cambio de Contraseña
-
-```mermaid
-sequenceDiagram
-    participant Usuario
-    participant Vista as View (CambiarPasswordForm)
-    participant Servicio as ServicioUsuario
-    participant Modelo as ModeloUsuario
-    participant Django as Django User
-
-    Usuario->>Vista: Ingresa contraseña actual y nueva
-    Vista->>Servicio: Validar contraseña actual
-    Servicio->>Modelo: Obtener usuario logueado
-    Modelo-->>Servicio: Usuario encontrado
-    Servicio->>Django: Verificar contraseña actual
-    Django-->>Servicio: Resultado validación
-    Servicio->>Django: Actualizar contraseña
-    Django-->>Servicio: Confirmación de actualización
-    Servicio-->>Modelo: Guardar cambio en DB
-    Modelo-->>Servicio: Confirmación guardado
-    Servicio-->>Vista: Cambio exitoso / error
-    Vista-->>Usuario: Mensaje de confirmación o error
-```
-
-Explicación:
-Este flujo muestra cómo un usuario puede cambiar su contraseña de forma segura:
-
-- La contraseña actual se verifica contra Django.
-- La nueva contraseña se valida según políticas de seguridad.
-- Tanto Django como el Modelo guardan el cambio, asegurando coherencia y trazabilidad.
