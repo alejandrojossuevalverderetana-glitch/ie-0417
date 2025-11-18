@@ -272,4 +272,7 @@ classDiagram
 ```
 
 Explicación:
-Este diagrama permite visualizar cómo los tipos de usuarios heredan de la clase base Usuario, y cómo Funcionario se especializa en Profesor y Administrativo. Todos los campos críticos para autenticación, contacto y perfil se centralizan en Usuario, evitando duplicación.
+Este diagrama muestra cómo todas las personas que interactúan con el sistema ahora derivan de la clase base Usuario, unificando el manejo de datos.
+Anteriormente, únicamente los funcionarios heredaban de una clase común; sin embargo, con el nuevo diseño todos los tipos de usuarios comparten la misma estructura fundamental (credenciales, contacto, información de perfil).
+
+A partir de Usuario se especializan clases más específicas —como Funcionario, que a su vez se divide en Profesor y Administrativo— sin duplicar atributos esenciales. Esto permite una jerarquía más coherente, facilita la autenticación y reduce la repetición de información.
