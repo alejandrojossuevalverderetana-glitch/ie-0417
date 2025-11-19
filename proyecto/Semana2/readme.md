@@ -87,6 +87,21 @@ El módulo propuesto busca **unificar la autenticación y la gestión de usuario
 
 ## Diagramas UML
 
+### 1. Diagrama de caso de uso del módulo
+
+![Casos de uso](./images/caso_de_uso.jpg)
+
+### 2.1. Diagrama de flujo de primer caso de uso
+![Flujo 1](./images/flujo1.jpg)
+
+### 2.2 Diagrama de flujo de segundo caso de uso
+![Flujo 2](./images/flujo2.jpg)
+
+### 3. Diagrama de clases del sistema de usuario
+![Clases usuario](./images/uml.jpg)
+
+
+
 ### 4. Diagramas de Secuencia – Módulo de Gestión de Usuarios y Sesiones
 
 Este documento describe las interacciones entre las capas del sistema para las operaciones principales sobre los usuarios: **login**, **registro** y **cambio de contraseña**. Cada diagrama muestra cómo se comunican **usuario**, **vista**, **servicios**, **modelo** y **Django**.
@@ -276,3 +291,61 @@ Este diagrama muestra cómo todas las personas que interactúan con el sistema a
 Anteriormente, únicamente los funcionarios heredaban de una clase común; sin embargo, con el nuevo diseño todos los tipos de usuarios comparten la misma estructura fundamental (credenciales, contacto, información de perfil).
 
 A partir de Usuario se especializan clases más específicas —como Funcionario, que a su vez se divide en Profesor y Administrativo— sin duplicar atributos esenciales. Esto permite una jerarquía más coherente, facilita la autenticación y reduce la repetición de información.
+
+## Arquitectura Propuesta
+Se propone una arquitectura por capas. Se busca que los módulos ya creados de Funcionario, Estudiante, Profesor, Alumnus y Administrativo sigan una lógica de capas correcta, en donde sus campos están relacionados a los datos del modelo y no a realizar funciones extra, además de agregar la referencia al User de Django, que proporciona funciones de autenticación y manejo de usuarios (inclusive grupos), como un intento de fomentar que la nueva creación de usuarios a través de este usuario y no por medio de creaciones de usuarios independientes a lo largo del proyecto.
+
+Las funciones extra que estaban localizadas en estos módulos se mueven a una capa de servicios a las cuales todos los usuarios pueden acceder (ya que todos los módulos definen estas mismas funciones dentro de models.py)
+
+Los componentes que se van a encargar de los procesos mencionados anteriormente son:
+- Search Service: Proporciona búsquedas en base a la expresión brindada. Para cada usuario este método es ligeramente diferente por lo que se va a desarrollar bajo el patrón Strategy, de esta forma si en el futuro se quiere utilizar una expresión diferente para buscar se puede simplemente agregar la estrategia deseada.
+
+- EnviarEmail: Este método es utilizado por todos los usuarios exactamente de la misma manera, por lo que se moverá a una capa de servicios en donde se dejará como una función que puede ser utilizada por cualquier proceso.
+
+- SetPassword: Nuevamente, es un servicio que utilizan todos los usuarios por lo que la lógica se coloca en la capa de servicios como una función disponible para todo tipo de usuario. Sin embargo, la forma en la que se brinda y guarda la contraseña es por medio del User de Django y no la forma personalizada que utilizaba el código anterior.
+
+- SetImageDefault: De nuevo, este código está presente en algunos de los usuarios en una capa en la cual no debería de estar (models.py), por lo que se moverá a la sección de servicios como una función.
+
+Otro componente importante son los decoradores de autenticación del sistema. Actualmente estos dependen del "id" dentro de la sesión del usuario en el navegador, el cual es manejado por la cookie "session id". Si esta cookie es tomada, un tercero puede aparentar ser un usuario importante y generar daños en la página, por lo que utilizar el sistema de autenticación de usuarios de Django es de relevancia.
+
+Actualmente, existe una gran cantidad de decoradores que se encargan de garantizar permisos a los usuarios, los cuales serán modificados para utilizar funciones de Django como método de autenticación.
+
+Hay más funciones en models.py que deberían de moverse a la capa de servicios como los métodos encargados de recuperar contraseña, sin embargo, por tiempo no se modificarán pero es de utilidad conocerlo.
+
+
+
+### Validaciones a implementar
+
+Las validaciones a implementar para este proyecto tienen relación a la creación del nuevo usuario y su integración correcta con el resto del sistema. Se debe de validar que luego de la primer migración, todo elemento presente en la base datos asocidado a un funcionario, estudiante o alumnus, tenga un Usuario asignado en la tabla de usuario de Django.
+
+Además, se debe de validar que la migración de datos presentes haya sido exitosa. Esto quiere decir que los campos de email, nombre, apellidos y contraseña apunten correctamente a los campos del nuevo usuario y que además, se hayan eliminado exitosamente de la tabla anterior que aparentaba funcionar como usuario en el sistema. Cabe destacar que las dos tablas deben de coexistir exitosamente.
+
+Por otro lado, se debe de validar que luego de los cambios realizados a los modelos se hayan realizado todas las confirmaciones de dependencias presentes a lo largo de todo el código. Es decir, se debe de validar que todos los sistemas que dependían de servicios en los modelos de usuario funcionen correctamente al integrarse con la nueva capa de servicios.
+
+También, se debe de confirmar que los cambios a los decoradores no generan conflictos en funcionalidad del sistema y que además, los usuarios permanecen con los permisos de acuerdos a sus usuarios/roles intactos.
+
+### Posibles riesgos y mitigación
+
+En primer lugar, se corre el riesgo de que alguna migración en la base de datos no se realice correctamente. Debido a esto, la posible mitigación de esto es realizar una migración progresiva del sistema, verificando que el sistema no deja de funcionar al realizar diversos cambios y si lo hace, tener una forma de volver a una versión anterior. La acción que se tomará para mitigar definitivamente es realizar cambios pequeños enfocados en un único módulo mientras se garantiza por medio de pruebas que el sistema funciona. Una vez que un módulo completo funciona, se procederá a realizar la implementación del siguiente hasta tener todo el sistema listo.
+
+Además, otro riesgo presente es la falta de dependencias satisfechas al momento de separar los métodos presentes en los módulos de models.py a la capa de servicios. Para esto, de nuevo, se debe realizar cambios progresivos con respecto a los módulos y probar la funcionalidad constantemente para garantizar que el sistema funciona correctamente. 
+
+Por otro lado, con respecto a los decoradores, ya que tantos de estos dependen del campo id presente en la sesión del navegador, puede ocurrir que un método que requiera de ese id no fuera actualizado, lo que ocasionaría una falla en el sistema. Ante esto, se debe de programar de tal forma que se utilice el nuevo sistema como base, pero que se utilice el otro sistema en caso de alguna falla; lo anterior se utiliza como medida de mitigación para mantener el sistema estable volviendo a su forma de ejecutarse anteriormente. Se deben de agregar chequeos de sistema para conocer cuál sistema se está utilizando (viejo o nuevo) y poder diagnosticar los motivos del por qué. Además, en la medida de lo posible se planea utilizar el método Adapter para mantener consistencia con el formato de los datos esperados por el sistema antiguo.
+
+## Plan de Implementación
+
+Como plan de implementación:
+
+- Se debe de agregar el usuario de Django por medio de OneToOneField(User) a los modelos Estudiante, Alumnus y Funcionario para enlazar las tablas a auth_user.
+- Se debe realizar una migración de esta acción en la base de datos.
+- Generar un código que se encargue de asociar el email y las contraseñas, así como estado de activo o inactivo, nombre y apellidos en los campos del nuevo usuario para estudiantes.
+- Corroborar que los datos de estudiantes fueron traspasados exitosamente.
+- Implementar el nuevo sistema de autenticación y lógica de inicio de sesión para estudiantes. Se debe de utilizar el nuevo sistema como forma base o la forma antigua si esta falla.
+- Realizar pruebas individuales para determinar cómo funciona el sistema ante los cambios y corregir en base a los resultados.
+- Una vez que las pruebas son superadas, repetir los pasos para el módulo de funcionarios, administradores, profesores y Alumni. Se repiten los pasos una vez que se termina con un único módulo.
+- Una vez que el sistema de autenticación funciona correctamente, se crea la capa de servicios generales que utilizarán los usuarios.
+- Se realizan los cambios necesarios en los otros segmentos del código que dependían de estos servicios por módulo. Se debe intentar utilizar la versión nueva y en caso de fallo utilizar la versión antigua para evitar errores en tiempo de ejecución.
+- Se realizan pruebas al nuevo módulo de servicios para asegurarse que fue integrado correctamente a lo largo de todo el código de la página.
+- Una vez que las pruebas son superadas, se eliminan de los módulos de usuarios estos servicios generales y se eliminan además los campos de contraseña, nombre, apellidos y activo, ya que estos ya no son parte de los módulos de usuario antiguos de la página. 
+
+
